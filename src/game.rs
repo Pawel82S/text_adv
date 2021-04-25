@@ -80,20 +80,9 @@ impl Game {
             GameState::Normal => {
                 let direction = if self.engine.is_key_pressed(KeyCode::Char('q')) {
                     self.is_running = false;
-                    Vec2::ZERO
-                } else if self.engine.is_key_held(KeyCode::Up) {
-                    Vec2::UP
-                } else if self.engine.is_key_held(KeyCode::Down) {
-                    Vec2::DOWN
-                } else if self.engine.is_key_held(KeyCode::Left) {
-                    Vec2::LEFT
-                } else if self.engine.is_key_held(KeyCode::Right) {
-                    Vec2::RIGHT
-                } else if self.engine.is_key_pressed(KeyCode::Enter) {
-                    self.player.turn();
-                    Vec2::ZERO
+                    return;
                 } else {
-                    Vec2::ZERO
+                    self.get_input_vector()
                 };
 
                 if direction == Vec2::ZERO || !self.map.can_move(self.player.position() + direction)
@@ -172,6 +161,20 @@ impl Game {
         }
 
         self.engine.draw();
+    }
+
+    fn get_input_vector(&self) -> Vec2 {
+        if self.engine.is_key_held(KeyCode::Up) {
+            Vec2::UP
+        } else if self.engine.is_key_held(KeyCode::Down) {
+            Vec2::DOWN
+        } else if self.engine.is_key_held(KeyCode::Left) {
+            Vec2::LEFT
+        } else if self.engine.is_key_held(KeyCode::Right) {
+            Vec2::RIGHT
+        } else {
+            Vec2::ZERO
+        }
     }
 
     fn player_details_renderer(&mut self) {
