@@ -25,8 +25,6 @@ pub struct Player {
 }
 
 impl Player {
-    pub const SYMBOL: char = '☻';
-
     pub fn new(
         name: String,
         max_health: u8,

@@ -183,7 +183,7 @@ impl Game {
         self.engine.set_pxl(
             self.player.position().x,
             self.player.position().y,
-            pixel::pxl(Player::SYMBOL),
+            pixel::pxl(crate::tiles::PLAYER),
         );
 
         self.engine.print_screen(61, 0, simple_player_scr.screen());
