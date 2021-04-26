@@ -22,16 +22,16 @@ impl Size {
 pub fn main_layout_screen(width: u32, height: u32) -> Screen {
     let mut s = Screen::new(width, height);
 
-    s.v_line(60, 0, height as i32, pixel::pxl(tiles::Border::VERTICAL));
-    s.h_line(61, 10, width as i32, pixel::pxl(tiles::Border::HORIZONTAL));
+    s.v_line(60, 0, height as i32, pixel::pxl(tiles::border::VERTICAL));
+    s.h_line(61, 10, width as i32, pixel::pxl(tiles::border::HORIZONTAL));
     s.h_line(
         61,
         height as i32 - 5,
         width as i32,
-        pixel::pxl(tiles::Border::HORIZONTAL),
+        pixel::pxl(tiles::border::HORIZONTAL),
     );
 
-    let pxl = pixel::pxl(tiles::Border::CENTER_LEFT);
+    let pxl = pixel::pxl(tiles::border::CENTER_LEFT);
     s.set_pxl(60, 10, pxl);
     s.set_pxl(60, height as i32 - 5, pxl);
 

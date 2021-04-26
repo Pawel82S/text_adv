@@ -46,14 +46,14 @@ impl EventWindow {
         let width = self.size.width as i32 - 1;
         let height = self.size.height as i32 - 1;
 
-        screen.h_line(0, 0, width, pixel::pxl(tiles::Border::HORIZONTAL));
-        screen.h_line(0, height, width, pixel::pxl(tiles::Border::HORIZONTAL));
-        screen.v_line(0, 0, height, pixel::pxl(tiles::Border::VERTICAL));
-        screen.v_line(width, 0, height, pixel::pxl(tiles::Border::VERTICAL));
-        screen.set_pxl(0, 0, pixel::pxl(tiles::Border::TOP_LEFT));
-        screen.set_pxl(width, 0, pixel::pxl(tiles::Border::TOP_RIGHT));
-        screen.set_pxl(0, height, pixel::pxl(tiles::Border::BOTTOM_LEFT));
-        screen.set_pxl(width, height, pixel::pxl(tiles::Border::BOTTOM_RIGHT));
+        screen.h_line(0, 0, width, pixel::pxl(tiles::border::HORIZONTAL));
+        screen.h_line(0, height, width, pixel::pxl(tiles::border::HORIZONTAL));
+        screen.v_line(0, 0, height, pixel::pxl(tiles::border::VERTICAL));
+        screen.v_line(width, 0, height, pixel::pxl(tiles::border::VERTICAL));
+        screen.set_pxl(0, 0, pixel::pxl(tiles::border::TOP_LEFT));
+        screen.set_pxl(width, 0, pixel::pxl(tiles::border::TOP_RIGHT));
+        screen.set_pxl(0, height, pixel::pxl(tiles::border::BOTTOM_LEFT));
+        screen.set_pxl(width, height, pixel::pxl(tiles::border::BOTTOM_RIGHT));
 
         if self.title.len() > 0 {
             // Put title at top frame in the center.
