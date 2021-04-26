@@ -1,4 +1,4 @@
-use crate::{serialize::Serialize, vector::Vec2};
+use crate::{serialize::Serialize, tiles, vector::Vec2};
 use console_engine::{pixel, screen::Screen};
 use std::{
     fs::{self, File},
@@ -25,6 +25,7 @@ enum MultiShapeTile {
     CenterLeft,
     CenterRight,
     Cross,
+    Invalid(Vec2),
 }
 
 #[derive(Debug, PartialEq)]
@@ -125,7 +126,6 @@ impl Map {
                 let mut shape = MultiShapeTile::Single;
                 for direction in check_directions.iter() {
                     let checked_index = (current_position + *direction).to_index(self.width);
-                    // FIXME: Index out of bounds 312/312
                     if *tile != self.tiles[checked_index] {
                         continue;
                     }
@@ -136,119 +136,122 @@ impl Map {
                             Vec2::DOWN => MultiShapeTile::VerticalBottom,
                             Vec2::LEFT => MultiShapeTile::HorizontalLeft,
                             Vec2::RIGHT => MultiShapeTile::HorizontalRight,
-                            _ => panic!("Invalid direction for neighbour tile: {:?}", direction),
+                            _ => MultiShapeTile::Invalid(*direction),
                         },
                         MultiShapeTile::HorizontalLeft => match *direction {
                             Vec2::UP => MultiShapeTile::BottomRight,
                             Vec2::RIGHT => MultiShapeTile::Horizontal,
                             Vec2::DOWN => MultiShapeTile::TopRight,
-                            _ => panic!("Invalid direction for neighbour tile: {:?}", direction),
+                            _ => MultiShapeTile::Invalid(*direction),
                         },
                         MultiShapeTile::HorizontalRight => match *direction {
                             Vec2::LEFT => MultiShapeTile::Horizontal,
                             Vec2::UP => MultiShapeTile::BottomLeft,
                             Vec2::DOWN => MultiShapeTile::TopLeft,
-                            _ => panic!("Invalid direction for neighbour tile: {:?}", direction),
+                            _ => MultiShapeTile::Invalid(*direction),
                         },
                         MultiShapeTile::Horizontal => match *direction {
                             Vec2::UP => MultiShapeTile::BottomCenter,
                             Vec2::DOWN => MultiShapeTile::TopCenter,
-                            _ => panic!("Invalid direction for neighbour tile: {:?}", direction),
+                            _ => MultiShapeTile::Invalid(*direction),
                         },
                         MultiShapeTile::VerticalTop => match *direction {
                             Vec2::DOWN => MultiShapeTile::Vertical,
                             Vec2::LEFT => MultiShapeTile::BottomRight,
                             Vec2::RIGHT => MultiShapeTile::BottomLeft,
-                            _ => panic!("Invalid direction for neighbour tile: {:?}", direction),
+                            _ => MultiShapeTile::Invalid(*direction),
                         },
                         MultiShapeTile::VerticalBottom => match *direction {
                             Vec2::UP => MultiShapeTile::Vertical,
                             Vec2::LEFT => MultiShapeTile::TopRight,
                             Vec2::RIGHT => MultiShapeTile::TopLeft,
-                            _ => panic!("Invalid direction for neighbour tile: {:?}", direction),
+                            _ => MultiShapeTile::Invalid(*direction),
                         },
                         MultiShapeTile::Vertical => match *direction {
                             Vec2::LEFT => MultiShapeTile::CenterRight,
                             Vec2::RIGHT => MultiShapeTile::CenterLeft,
-                            _ => panic!("Invalid direction for neighbour tile: {:?}", direction),
+                            _ => MultiShapeTile::Invalid(*direction),
                         },
                         MultiShapeTile::TopLeft => match *direction {
                             Vec2::UP => MultiShapeTile::CenterLeft,
                             Vec2::LEFT => MultiShapeTile::TopCenter,
-                            _ => panic!("Invalid direction for neighbour tile: {:?}", direction),
+                            _ => MultiShapeTile::Invalid(*direction),
                         },
                         MultiShapeTile::TopCenter => match *direction {
                             Vec2::UP => MultiShapeTile::Cross,
-                            _ => panic!("Invalid direction for neighbour tile: {:?}", direction),
+                            _ => MultiShapeTile::Invalid(*direction),
                         },
                         MultiShapeTile::TopRight => match *direction {
                             Vec2::UP => MultiShapeTile::CenterRight,
                             Vec2::RIGHT => MultiShapeTile::TopCenter,
-                            _ => panic!("Invalid direction for neighbour tile: {:?}", direction),
+                            _ => MultiShapeTile::Invalid(*direction),
                         },
                         MultiShapeTile::BottomLeft => match *direction {
                             Vec2::DOWN => MultiShapeTile::CenterLeft,
                             Vec2::LEFT => MultiShapeTile::BottomCenter,
-                            _ => panic!("Invalid direction for neighbour tile: {:?}", direction),
+                            _ => MultiShapeTile::Invalid(*direction),
                         },
                         MultiShapeTile::BottomCenter => match *direction {
                             Vec2::DOWN => MultiShapeTile::Cross,
-                            _ => panic!("Invalid direction for neighbour tile: {:?}", direction),
+                            _ => MultiShapeTile::Invalid(*direction),
                         },
                         MultiShapeTile::BottomRight => match *direction {
                             Vec2::DOWN => MultiShapeTile::CenterRight,
                             Vec2::RIGHT => MultiShapeTile::BottomCenter,
-                            _ => panic!("Invalid direction for neighbour tile: {:?}", direction),
+                            _ => MultiShapeTile::Invalid(*direction),
                         },
                         MultiShapeTile::CenterLeft => match *direction {
                             Vec2::LEFT => MultiShapeTile::Cross,
-                            _ => panic!("Invalid direction for neighbour tile: {:?}", direction),
+                            _ => MultiShapeTile::Invalid(*direction),
                         },
                         MultiShapeTile::CenterRight => match *direction {
                             Vec2::RIGHT => MultiShapeTile::Cross,
-                            _ => panic!("Invalid direction for neighbour tile: {:?}", direction),
+                            _ => MultiShapeTile::Invalid(*direction),
                         },
-                        _ => panic!("Invalid direction for neighbour tile: {:?}", direction),
+                        _ => MultiShapeTile::Invalid(*direction),
                     };
                 }
 
                 match shape {
-                    MultiShapeTile::Cross => '╋',
-                    MultiShapeTile::Single => '╋', // This should be different then cross
-                    MultiShapeTile::TopLeft => '┏',
-                    MultiShapeTile::TopRight => '┓',
-                    MultiShapeTile::TopCenter => '┳',
-                    MultiShapeTile::BottomLeft => '┗',
-                    MultiShapeTile::BottomRight => '┛',
-                    MultiShapeTile::BottomCenter => '┻',
-                    MultiShapeTile::CenterLeft => '┣',
-                    MultiShapeTile::CenterRight => '┫',
+                    MultiShapeTile::Invalid(direction) => {
+                        panic!("Invalid direction for neighbour tile: {:?}", direction)
+                    }
+                    MultiShapeTile::Cross => tiles::border::CENTER_CENTER,
+                    MultiShapeTile::Single => tiles::border::CENTER_CENTER,
+                    MultiShapeTile::TopLeft => tiles::border::TOP_LEFT,
+                    MultiShapeTile::TopRight => tiles::border::TOP_RIGHT,
+                    MultiShapeTile::TopCenter => tiles::border::TOP_CENTER,
+                    MultiShapeTile::BottomLeft => tiles::border::BOTTOM_LEFT,
+                    MultiShapeTile::BottomRight => tiles::border::BOTTOM_RIGHT,
+                    MultiShapeTile::BottomCenter => tiles::border::BOTTOM_CENTER,
+                    MultiShapeTile::CenterLeft => tiles::border::CENTER_LEFT,
+                    MultiShapeTile::CenterRight => tiles::border::CENTER_RIGHT,
                     MultiShapeTile::HorizontalLeft
                     | MultiShapeTile::HorizontalRight
-                    | MultiShapeTile::Horizontal => '━',
+                    | MultiShapeTile::Horizontal => tiles::border::HORIZONTAL,
                     MultiShapeTile::VerticalTop
                     | MultiShapeTile::VerticalBottom
-                    | MultiShapeTile::Vertical => '┃',
+                    | MultiShapeTile::Vertical => tiles::border::VERTICAL,
                 }
             } else {
                 match *tile {
-                    MapTile::Empty => ' ',
+                    MapTile::Empty => tiles::EMPTY,
                     MapTile::Door { locked } => {
                         if locked {
-                            'D'
+                            tiles::door::LOCKED
                         } else {
-                            'd'
+                            tiles::door::UNLOCKED
                         }
                     }
-                    MapTile::Grass => '.',
+                    MapTile::Grass => tiles::GRASS,
                     MapTile::Window { locked } => {
                         if locked {
-                            'W'
+                            tiles::window::LOCKED
                         } else {
-                            'w'
+                            tiles::window::UNLOCKED
                         }
                     }
-                    MapTile::Player => '☻',
+                    MapTile::Player => tiles::PLAYER,
                     _ => panic!("Tile {:?} is not implemented or multishape", tile),
                 }
             };
@@ -263,6 +266,7 @@ impl Map {
     fn split_for_map_and_details(raw_data: &str) -> (String, String) {
         let map: String = raw_data
             .lines()
+            .filter(|line| !line.is_empty() && !line.trim_start().starts_with(";"))
             .take_while(|line| line.trim() != DETAILS_SECTION)
             .map(|line| format!("{}\n", line))
             .collect();
@@ -271,20 +275,11 @@ impl Map {
             .lines()
             .skip_while(|line| line.trim() != DETAILS_SECTION)
             .skip(1)
+            .filter(|line| !line.is_empty() && !line.trim_start().starts_with(";"))
             .map(|line| format!("{}\n", line))
             .collect();
 
-        let map = Self::remove_empty_lines_and_comments(&map);
-        let map_details = Self::remove_empty_lines_and_comments(&map_details);
-
         (map, map_details)
-    }
-
-    fn remove_empty_lines_and_comments(map: &str) -> String {
-        map.lines()
-            .filter(|line| !line.is_empty() && !line.trim_start().starts_with(";"))
-            .map(|filtered| format!("{}\n", filtered))
-            .collect()
     }
 
     fn parse_data(map_data: String, details: String) -> Self {
