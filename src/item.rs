@@ -118,25 +118,3 @@ impl fmt::Display for Item {
         write!(f, "{}{}", name, params)
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn print_test() {
-        let item = Item {
-            location: Location::Head,
-            health_mod: 0,
-            mana_mod: 2,
-            attack_mod: -1,
-            defense_mod: 0,
-            strength_mod: -1,
-            dexterity_mod: 0,
-            intelligence_mod: 0,
-            speed_mod: 0,
-        };
-
-        println!("{}", item);
-    }
-}

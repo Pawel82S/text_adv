@@ -353,33 +353,3 @@ impl Serialize for Map {
         unimplemented!()
     }
 }
-
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn row_and_colums() {
-        let width = 8;
-        let tiles_len = 31;
-
-        let beginning_row = |idx| idx < width;
-        let ending_row = |idx| idx > tiles_len - width;
-        let beginning_column = |idx| idx % width == 0;
-        let ending_column = |idx| (idx / width + 1) * width % width == 0;
-
-        assert!(beginning_row(0));
-        assert!(beginning_row(3));
-        assert!(beginning_row(7));
-
-        assert!(ending_row(24));
-        assert!(ending_row(27));
-        assert!(ending_row(31));
-
-        assert!(beginning_column(0));
-        assert!(beginning_column(16));
-        assert!(beginning_column(24));
-
-        assert!(ending_column(7));
-        assert!(ending_column(15));
-        assert!(ending_column(31));
-    }
-}

@@ -105,17 +105,3 @@ impl Event {
         self.event_taken
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn event_generator() {
-        let mut e = Event::new();
-        e.player_moved(Vec2::ZERO);
-        let evt = e.get_event();
-        e.player_moved(Vec2::UP);
-        let evt = e.get_event();
-    }
-}
