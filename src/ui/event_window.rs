@@ -2,7 +2,7 @@ use super::Size;
 use crate::tiles;
 use console_engine::{pixel, screen::Screen, Color, ConsoleEngine, KeyCode};
 
-const OPTIONS_SPACING: u32 = 3;
+const OPTIONS_SPACING: usize = 3;
 
 pub struct EventWindow {
     title: String,
@@ -55,22 +55,22 @@ impl EventWindow {
         screen.set_pxl(0, height, pixel::pxl(tiles::border::BOTTOM_LEFT));
         screen.set_pxl(width, height, pixel::pxl(tiles::border::BOTTOM_RIGHT));
 
+        let center_x = |length| ((self.size.width - length as u32) / 2) as i32;
+
         if self.title.len() > 0 {
             // Put title at top frame in the center.
-            let x = ((self.size.width - self.title.len() as u32) / 2) as i32;
-            screen.print(x, 0, &self.title);
+            screen.print(center_x(self.title.len()), 0, &self.title);
         }
 
         if self.contents.len() > 0 {
             // Put constents at the window center
-            let x = ((self.size.width - self.contents.len() as u32) / 2) as i32;
-            screen.print(x, 1, &self.contents);
+            screen.print(center_x(self.contents.len()), 1, &self.contents);
         }
 
         let mut spacings = self.options.len() - 1;
-        let options_len: u32 = self.options.iter().map(|opt| opt.len() as u32).sum();
-        let total_len = spacings as u32 * OPTIONS_SPACING + options_len;
-        let mut x = ((self.size.width - total_len) / 2) as i32;
+        let options_len: usize = self.options.iter().map(|opt| opt.len()).sum();
+        let total_len = spacings * OPTIONS_SPACING + options_len;
+        let mut x = center_x(total_len);
 
         for (idx, option) in self.options.iter().enumerate() {
             screen.print_fbg(
